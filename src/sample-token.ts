@@ -4,7 +4,7 @@ import {
   Approval,
   Transfer
 } from "../generated/SampleToken/SampleToken"
-import { ExampleEntity } from "../generated/schema"
+import { ExampleEntity, Token } from "../generated/schema"
 
 export function handleApproval(event: Approval): void {
   // Entities can be loaded from the store using a string ID; this ID
@@ -60,4 +60,22 @@ export function handleApproval(event: Approval): void {
   // - contract.withdraw(...)
 }
 
-export function handleTransfer(event: Transfer): void {}
+export function handleTransfer(event: Transfer): void {
+  // Entities can be loaded from the store using a string ID; this ID
+  // needs to be unique across all entities of the same type
+  let entity = new Token(event.transaction.hash.toHex())
+
+  // Entity fields can be set using simple assignments
+  entity.count = BigInt.fromI32(0)
+
+  // BigInt and BigDecimal math are supported
+  entity.count = entity.count + BigInt.fromI32(1)
+
+  // Entity fields can be set based on event parameters
+  entity.from = event.params.from
+  entity.to = event.params.to
+  entity.value = event.params.value
+
+  // Entities can be written to the store with `.save()`
+  entity.save()
+}
